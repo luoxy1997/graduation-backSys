@@ -1,4 +1,5 @@
 import JSZip from 'jszip';
+
 /**
  * 前端图片处理一些工具方法，获取图片类型、获取图片文件数据，前端回显、按比例压缩图片、压缩图片到指定大小
  * @example
@@ -96,10 +97,10 @@ export function getImageData(file) {
  * @returns {Promise}
  */
 export function compressImage({
-    data,
-    type = 'image/jpeg',
-    quality = 0.8,
-}) {
+                                  data,
+                                  type = 'image/jpeg',
+                                  quality = 0.8,
+                              }) {
     if (!data) return;
     return new Promise((resolve, reject) => {
         const canvas = document.createElement('canvas');
@@ -150,11 +151,11 @@ export function getImageSizeByBase64(imageBase64Data) {
  * @returns {Promise}
  */
 export function compressImageToSize({
-    data,
-    type = 'image/jpeg',
-    size = 300 * 1000, // 默认 300K左右
-    qualityStep = 0.9, // 每次压缩比
-}) {
+                                        data,
+                                        type = 'image/jpeg',
+                                        size = 300 * 1000, // 默认 300K左右
+                                        qualityStep = 0.9, // 每次压缩比
+                                    }) {
     if (getImageSizeByBase64(data) < size) {
         return Promise.resolve(data);
     }

@@ -94,7 +94,7 @@ export default class extends Component {
                 <div styleName="logo"/>
                 <div styleName="note"/>
                 <div styleName="box">
-                    <div styleName="header">{local.title}</div>
+                    <div styleName="header">{local.title}知识平台管理系统</div>
                     <Form onSubmit={this.handleSubmit}>
                         <Form.Item
                             validateStatus={userNameError ? 'error' : ''}

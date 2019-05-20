@@ -1,16 +1,23 @@
 import React, {Component} from 'react';
 import ReactEchart from 'echarts-for-react';
-import {Row, Col} from 'antd';
+import {Row, Col, Icon, DatePicker, Button, Form, Input} from 'antd';
+
 import config from '@/commons/config-hoc';
 import PageContent from '@/layouts/page-content';
 import DataBlock from '@/components/data-block';
 import './style.less';
+import svg from './svg.png'
+import {ajaxHoc} from "../../commons/ajax";
 
+const {MonthPicker, RangePicker, WeekPicker} = DatePicker;
+@ajaxHoc()
 @config({
     path: '/',
     title: {local: 'home', text: '首页', icon: 'home'},
     breadcrumbs: [{key: 'home', local: 'home', text: '首页', icon: 'home'}],
 })
+@Form.create()
+
 export default class Home extends Component {
     constructor(...props) {
         super(...props);
@@ -42,6 +49,24 @@ export default class Home extends Component {
         warning: 28,
         start: 168,
     };
+    handleOk = () => {
+        this.props.form.validateFieldsAndScroll((err, value) => {
+            if (!err) {
+                const activeStartData = value.time && value.time.length && value.time[0].format('YYYY-MM-DD');
+                const activeEndData = value.time && value.time.length && value.time[1].format('YYYY-MM-DD');
+                const params = {
+                    activeStartData: activeStartData,
+                    activeEndData: activeStartData,
+                    userId: 2,
+                    activeDiscount: 0.98
+                }
+                this.props.ajax.post('/manager/opera/setActive', params)
+                    .then(() => {
+
+                    })
+            }
+        })
+    }
     getPieOption = () => {
         return {
             title: {
@@ -278,6 +303,10 @@ export default class Home extends Component {
             border: '1px solid #e8e8e8',
             borderRadius: '5px',
             padding: 8,
+            position: 'relative',
+            width: '100%',
+            height: 300
+
         };
         return (
             <PageContent styleName="root">
@@ -285,49 +314,46 @@ export default class Home extends Component {
                     <DataBlock
                         color="#1890FF"
                         count={users}
-                        tip="新增用户"
+                        tip="用户总数"
                         icon="user-add"
                     />
                     <DataBlock
                         color="#FAAD14"
                         count={read}
-                        tip="昨日阅读"
+                        tip="今日交易量"
                         icon="area-chart"
-                    />
-                    <DataBlock
-                        color="#3E8F2D"
-                        count={like}
-                        tip="新增点赞"
-                        icon="like"
-                    />
-                    <DataBlock
-                        color="red"
-                        count={warning}
-                        tip="报警次数"
-                        icon="warning"
-                    />
-                    <DataBlock
-                        color="#FA541C"
-                        count={start}
-                        tip="新增收藏"
-                        icon="star"
                     />
                 </div>
                 <Row style={{marginTop: 16}}>
-                    <Col span={8} style={{paddingRight: 16}}>
-                        <div style={colStyle}>
-                            <ReactEchart option={this.getPieOption()}/>
-                        </div>
-                    </Col>
-                    <Col span={16}>
-                        <div style={colStyle}>
-                            <ReactEchart option={this.getBarOption()}/>
+                    <Col span={12} style={{paddingRight: 16}}>
+                        <div style={colStyle} className="colStyle">
+                            <h3 style={{paddingBottom: '20px'}}><Icon type="setting"/> 设置假日：</h3>
+                            <div style={{paddingBottom: 30}}>
+                                <Form onSubmit={this.handleSubmit}>
+                                    <Form.Item label="设置日期"
+                                    >
+                                        {this.props.form.getFieldDecorator('time', {
+                                            rules: [{required: true}],
+                                        })(
+                                            <RangePicker showTime format="YYYY-MM-DD"/>
+                                        )}
+                                    </Form.Item>
+                                    <Form.Item label="设置折扣"
+                                    >
+                                        {this.props.form.getFieldDecorator('time', {
+                                            rules: [{required: true}],
+                                        })(
+                                            <Input placeholder="请输入设置的折扣" style={{width: '250px'}} suffix={<Icon type="percentage"/>}/>
+                                        )}
+                                    </Form.Item>
+                                    <Button type="primary" style={{marginLeft: '40px', position: 'relative', zIndex: 100}} onClick={this.handleOk}>确认设置</Button>
+
+                                </Form>
+                            </div>
+                            <img src={svg} alt="" tit="" width={200} style={{position: 'absolute', right: '-30px', bottom: '0'}}/>
                         </div>
                     </Col>
                 </Row>
-                <div style={{...colStyle, marginTop: 16}}>
-                    <ReactEchart option={this.getBar2Option()}/>
-                </div>
             </PageContent>
         );
     }

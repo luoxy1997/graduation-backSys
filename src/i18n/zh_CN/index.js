@@ -29,7 +29,7 @@ export default {
         antDesign: 'Ant Design 官网',
         google: '谷歌官网',
 
-        component: '组件',
+
         tableRowDraggable: '表格行可拖拽',
         asyncSelect: '异步下拉',
         formElement: '表单元素',

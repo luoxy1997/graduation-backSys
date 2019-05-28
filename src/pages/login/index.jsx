@@ -128,8 +128,7 @@ export default class extends Component {
                     </Form>
                     <div styleName="error-tip">{message}</div>
                     <div styleName="tip">
-                        <span>{local.userName}：admin </span>
-                        <span>{local.password}：111</span>
+                        <span>罗馨钰@2019 长春大学毕业设计 </span>
                     </div>
                 </div>
             </div>

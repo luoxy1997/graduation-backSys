@@ -21,13 +21,20 @@ const {MonthPicker, RangePicker, WeekPicker} = DatePicker;
 export default class Home extends Component {
     constructor(...props) {
         super(...props);
+        this.props.ajax.get('/manager/opera/getOperaData')
+            .then(res => {
+                const title = res.data.map(item => item.remark);
+                const value = res.data.map(item => item.value)
+                this.setState({title, value})
+            });
         this.props.onComponentWillShow(() => {
             this.setState({
-                users: 868,
-                read: 1869,
+                users: 86800,
+                read: 200,
                 like: 666,
                 warning: 28,
                 start: 168,
+                data: []
             });
         });
 
@@ -44,7 +51,7 @@ export default class Home extends Component {
 
     state = {
         users: 868,
-        read: 1869,
+        read: 200,
         like: 666,
         warning: 28,
         start: 168,
@@ -58,7 +65,7 @@ export default class Home extends Component {
                     activeStartData: activeStartData,
                     activeEndData: activeStartData,
                     userId: 2,
-                    activeDiscount: 0.98
+                    activeDiscount: value.activeDiscount
                 }
                 this.props.ajax.post('/manager/opera/setActive', params)
                     .then(() => {
@@ -196,99 +203,55 @@ export default class Home extends Component {
 
     getBar2Option = () => {
         return {
+            title: {
+                text: '热销商品分析',
+            },
             tooltip: {
-                trigger: 'axis',
-                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-                }
+                trigger: 'axis'
             },
             legend: {
-                data: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎', '百度', '谷歌', '必应', '其他']
+                data: ['最高气温']
             },
-            grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
-                containLabel: true
+            toolbox: {
+                show: true,
+                feature: {
+                    dataZoom: {
+                        yAxisIndex: 'none'
+                    },
+                    dataView: {readOnly: false},
+                    magicType: {type: ['line', 'bar']},
+                    restore: {},
+                    saveAsImage: {}
+                }
             },
-            xAxis: [
-                {
-                    type: 'category',
-                    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-                }
-            ],
-            yAxis: [
-                {
-                    type: 'value'
-                }
-            ],
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: this.state.title
+            },
+            yAxis: {
+                type: 'value',
+            },
             series: [
                 {
-                    name: '直接访问',
-                    type: 'bar',
-                    data: [320, 332, 301, 334, 390, 330, 320]
-                },
-                {
-                    name: '邮件营销',
-                    type: 'bar',
-                    stack: '广告',
-                    data: [120, 132, 101, 134, 90, 230, 210]
-                },
-                {
-                    name: '联盟广告',
-                    type: 'bar',
-                    stack: '广告',
-                    data: [220, 182, 191, 234, 290, 330, 310]
-                },
-                {
-                    name: '视频广告',
-                    type: 'bar',
-                    stack: '广告',
-                    data: [150, 232, 201, 154, 190, 330, 410]
-                },
-                {
-                    name: '搜索引擎',
-                    type: 'bar',
-                    data: [862, 1018, 964, 1026, 1679, 1600, 1570],
-                    markLine: {
-                        lineStyle: {
-                            normal: {
-                                type: 'dashed'
-                            }
-                        },
+                    name: '热销商品',
+                    type: 'line',
+                    data: this.state.value,
+                    markPoint: {
                         data: [
-                            [{type: 'min'}, {type: 'max'}]
+                            {type: 'max', name: '最大值'},
+                            {type: 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine: {
+                        data: [
+                            {type: 'average', name: '平均值'}
                         ]
                     }
-                },
-                {
-                    name: '百度',
-                    type: 'bar',
-                    barWidth: 5,
-                    stack: '搜索引擎',
-                    data: [620, 732, 701, 734, 1090, 1130, 1120]
-                },
-                {
-                    name: '谷歌',
-                    type: 'bar',
-                    stack: '搜索引擎',
-                    data: [120, 132, 101, 134, 290, 230, 220]
-                },
-                {
-                    name: '必应',
-                    type: 'bar',
-                    stack: '搜索引擎',
-                    data: [60, 72, 71, 74, 190, 130, 110]
-                },
-                {
-                    name: '其他',
-                    type: 'bar',
-                    stack: '搜索引擎',
-                    data: [62, 82, 91, 84, 109, 110, 120]
                 }
             ]
         };
-    };
+    }
 
     render() {
         const {
@@ -305,7 +268,7 @@ export default class Home extends Component {
             padding: 8,
             position: 'relative',
             width: '100%',
-            height: 300
+            height: 200
 
         };
         return (
@@ -320,17 +283,22 @@ export default class Home extends Component {
                     <DataBlock
                         color="#FAAD14"
                         count={read}
-                        tip="今日交易量"
+                        tip="会员总数"
                         icon="area-chart"
                     />
                 </div>
+
+
+                <div style={{...colStyle, marginTop: 16, height: 350}}>
+                    <ReactEchart option={this.getBar2Option()}/>
+                </div>
                 <Row style={{marginTop: 16}}>
-                    <Col span={12} style={{paddingRight: 16}}>
+                    <Col span={24} >
                         <div style={colStyle} className="colStyle">
                             <h3 style={{paddingBottom: '20px'}}><Icon type="setting"/> 设置假日：</h3>
-                            <div style={{paddingBottom: 30}}>
+                            <div style={{paddingBottom: 10}}>
                                 <Form onSubmit={this.handleSubmit}>
-                                    <Form.Item label="设置日期"
+                                    <Form.Item label="设置日期" style={{float:'left',marginRight:'50px'}}
                                     >
                                         {this.props.form.getFieldDecorator('time', {
                                             rules: [{required: true}],
@@ -338,15 +306,15 @@ export default class Home extends Component {
                                             <RangePicker showTime format="YYYY-MM-DD"/>
                                         )}
                                     </Form.Item>
-                                    <Form.Item label="设置折扣"
+                                    <Form.Item label="设置折扣" style={{float:'left',marginRight:'50px'}}
                                     >
-                                        {this.props.form.getFieldDecorator('time', {
+                                        {this.props.form.getFieldDecorator('activeDiscount', {
                                             rules: [{required: true}],
                                         })(
                                             <Input placeholder="请输入设置的折扣" style={{width: '250px'}} suffix={<Icon type="percentage"/>}/>
                                         )}
                                     </Form.Item>
-                                    <Button type="primary" style={{marginLeft: '40px', position: 'relative', zIndex: 100}} onClick={this.handleOk}>确认设置</Button>
+                                    <Button type="primary" style={{marginTop:'45px',marginLeft: '40px', position: 'relative', zIndex: 100}} onClick={this.handleOk}>确认设置</Button>
 
                                 </Form>
                             </div>

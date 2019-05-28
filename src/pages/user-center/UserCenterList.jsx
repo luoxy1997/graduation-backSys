@@ -186,7 +186,7 @@ export default class UserCenterList extends Component {
             <PageContent>
                 <div className="right-container">
                     <div className="right-title">
-                        <h2>上传视频课程</h2>
+                        <h2>上传积分课程</h2>
                     </div>
                     <div className="personalMsg">
                         <div className="title">作品信息</div>
@@ -219,14 +219,14 @@ export default class UserCenterList extends Component {
                             </Form.Item>
                             <Form.Item
                                 {...formItemLayout}
-                                label="课程价格"
+                                label="课程积分"
                             >
                                 {getFieldDecorator('commodityCredits', {
                                     rules: [{
                                         required: true, message: 'Please input your E-mail!',
                                     }],
                                 })(
-                                    <Input style={{width: 210}} addonAfter={'人民币(RMB)'}/>
+                                    <Input style={{width: 210}} addonAfter={'积分'}/>
                                 )}
                             </Form.Item>
                             <Form.Item
@@ -245,7 +245,7 @@ export default class UserCenterList extends Component {
                         </Form>
                     </div>
                     <div className="personalMsg">
-                        <div className="title">上传视频</div>
+                        <div className="title">上传文件</div>
                         <Row>
                             <Col span={6}>
                                 <div style={{paddingTop: '25px', paddingLeft: '5px'}}>

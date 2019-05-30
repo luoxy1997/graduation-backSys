@@ -129,6 +129,7 @@ export default class UserCenterList extends Component {
                 title: '创建时间',
                 dataIndex: 'commodityUpdateDate',
             },
+
         ];
         return (
             <PageContent>

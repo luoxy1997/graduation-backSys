@@ -8,7 +8,7 @@ import DataBlock from '@/components/data-block';
 import './style.less';
 import svg from './svg.png'
 import {ajaxHoc} from "../../commons/ajax";
-
+import  notify from './notify'
 const {MonthPicker, RangePicker, WeekPicker} = DatePicker;
 @ajaxHoc()
 @config({
@@ -65,11 +65,11 @@ export default class Home extends Component {
                     activeStartData: activeStartData,
                     activeEndData: activeStartData,
                     userId: 2,
-                    activeDiscount: value.activeDiscount
+                    activeDiscount: parseInt(value.activeDiscount)
                 }
                 this.props.ajax.post('/manager/opera/setActive', params)
                     .then(() => {
-
+                        notify('success','设置折扣成功')
                     })
             }
         })

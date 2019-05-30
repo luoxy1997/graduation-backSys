@@ -56,14 +56,29 @@ export default class UserCenterList extends Component {
 
     }
     handleReturn = (record) => {
-        this.props.ajax.post('customer/order/updateOrder', {orderState: 2, uuid: record.orderId})
+       this.setState({record:record,});
+
+        this.props.ajax.post('customer/order/updateOrder', {orderState: 2, uuid: record.orderId,})
             .then(res => {
                 notify('success', '审批通过')
+                this.handleSearch();
             })
     }
 
     componentWillMount() {
         this.handleSearch();
+    }
+    handleOk = () => {
+        const {orderId} = this.state.record;
+        const {remark} = this.props.form.getFieldsValue();
+        this.props.ajax.post('/customer/order/updateReturnOrder', {orderState: 4, uuid: orderId,remark:remark})
+            .then(res => {
+                notify('success', '驳回用户请求')
+                this.handleSearch();
+                this.setState({visible:false});
+
+            })
+
     }
 
     // 默认获取数据分页
@@ -73,6 +88,15 @@ export default class UserCenterList extends Component {
         //塞数据后立即执行函数并使用数据时，会产生异步，此时我们获取不到最新的值，所以我们这个时候传参
         this.handleSearch({pageNum: pageNum});
     };
+    handleReturn2 = (record) => {
+        this.setState({record:record,visible:true});
+
+    }
+    handleCancel = () =>{
+        this.setState({visible:false});
+    }
+
+
 
     render() {
         const {getFieldDecorator} = this.props.form;
@@ -104,7 +128,7 @@ export default class UserCenterList extends Component {
         const formItemLayout = {
             labelCol: {
                 xs: {span: 24},
-                sm: {span: 3},
+                sm: {span: 6},
             },
             wrapperCol: {
                 xs: {span: 24},
@@ -113,25 +137,24 @@ export default class UserCenterList extends Component {
         };
         const columns = [
             {
-                title: '商品名称',
-                dataIndex: 'commodityName',
-                render: text => <a href="javascript:;">{text}</a>,
-            },
-            {
                 title: '订单编号',
                 dataIndex: 'orderId',
             },
-            {
-                title: '商品类别',
-                dataIndex: 'commodityKind',
-            },
+
             {
                 title: '用户ID',
                 dataIndex: 'orderId',
             },
             {
+                title: '退货理由',
+                dataIndex: 'remark',
+            },
+            {
                 title: '操作',
-                render: (record) => <Tag color="red" onClick={() => this.handleReturn(record)}>同意退货申请</Tag>,
+                render: (record) =><div>
+                    <Tag color="green" onClick={() => this.handleReturn(record)}>同意</Tag>
+                    <Tag color="red" onClick={() => this.handleReturn2(record)}>驳回</Tag>
+                </div>,
                 align: 'center'
             },
         ];
@@ -151,6 +174,27 @@ export default class UserCenterList extends Component {
                     showTotal={total => `共 ${total}条`}//共多少条
                     style={{textAlign: 'center', marginTop: '20px'}}
                 />
+                <Modal
+                    title="Basic Modal"
+                    visible={this.state.visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                >
+                    <Form onSubmit={this.handleSubmit} style={{width: '400px', margin: '0 auto'}}>
+                        <Form.Item
+                            {...formItemLayout}
+                            label="驳回理由"
+                        >
+                            {getFieldDecorator('remark', {
+                                rules: [{
+                                    required: true, message: "请输入驳回理由！ ",
+                                }],
+                            })(
+                                <Input placeholder="请输入退货理由"/>
+                            )}
+                        </Form.Item>
+                    </Form>
+                </Modal>
             </PageContent>
         );
     }

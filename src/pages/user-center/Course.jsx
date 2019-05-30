@@ -67,6 +67,13 @@ export default class UserCenterList extends Component {
         //塞数据后立即执行函数并使用数据时，会产生异步，此时我们获取不到最新的值，所以我们这个时候传参
         this.handleSearch({pageNum: pageNum});
     };
+    handleDelete = (record) => {
+        this.props.ajax.get('/commodity/opera/deleteCommodity', {CommodityId: record.uuid})
+            .then(res => {
+                notify('success', '删除成功');
+                this.handleSearch();
+            })
+    }
 
     render() {
         const {getFieldDecorator} = this.props.form;
@@ -126,6 +133,11 @@ export default class UserCenterList extends Component {
             {
                 title: '创建时间',
                 dataIndex: 'commodityUpdateDate',
+            },
+            {
+                title: '操作',
+                render: record => <Tag color="red" onClick={() => this.handleDelete(record)}>删除</Tag>,
+                align: 'center'
             },
         ];
         return (
